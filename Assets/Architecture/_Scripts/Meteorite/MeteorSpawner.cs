@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SpaceTrip
 {
-    public class NewBehaviourScript : MonoBehaviour
+    public class MeteorSpawner : MonoBehaviour
     {
         [SerializeField][Range(.1f, 5f)] private float _timeSpawnM;
         //[SerializeField] private Transform _spawnerPosition;
@@ -16,28 +16,45 @@ namespace SpaceTrip
         private float TimeSpawnM => _timeSpawnM;
         private Vector2 WhereToSpawn => _whereToSpawnMeteor;
 
+        private FactoryService _factoryService;
 
-        void Repeat()
+        public void Init(FactoryService factoryService)
         {
-            StartCoroutine(SpawnM());
+            _factoryService = factoryService;
         }
 
 
-        IEnumerator SpawnM()
+        public void StartSpawn()
+        {
+            StartCoroutine(Spawning());
+        }
+
+        public void StopSpawn()
+        {
+            StopCoroutine(Spawning());
+        }
+
+
+
+        private void Repeat()
+        {
+            StartCoroutine(Spawning());
+        }
+
+
+        private IEnumerator Spawning()
         {
             _meteorSpawnPoint = Random.Range(-8f, 8f);
             _whereToSpawnMeteor = new Vector2(_meteorSpawnPoint, 6.44f);
-            Instantiate(Meteorite, _whereToSpawnMeteor, Quaternion.identity, Meteorite.transform.parent = transform);
+            
+            var meteorit = _factoryService.GetMeteoritFactory().Create();
+            meteorit.transform.parent = transform;
+            meteorit.transform.position = _whereToSpawnMeteor;
+
             yield return new WaitForSeconds(_timeSpawnM);
             Repeat();
 
         }
 
-
-        // Start is called before the first frame update
-        void Start()
-        {
-            StartCoroutine(SpawnM());
-        }
     }
 }

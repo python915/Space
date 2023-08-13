@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SpaceTrip
 {
-    public class MeteoriteMovement : MonoBehaviour
+    public class MeteoriteBehaviour : MonoBehaviour
     {
         [SerializeField] private float _speedMeteor;
         [SerializeField] private Vector2 _meteorMove;

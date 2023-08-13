@@ -1,44 +1,46 @@
 
+using SpaceTrip.Architecture._Scripts.Player;
 using UnityEngine;
 
 namespace SpaceTrip
 {
+    [RequireComponent(typeof(Rigidbody2D))]
     public class Player : MonoBehaviour
     {
-        public float PlayerSpeed => _playerSpeed;
-        public float MoveHorizontal => _moveHorizontal;
-        public Rigidbody2D GetRigidbody2D => _player;
-        public Vector2 PlayerMovement => _movement;
+        public float Speed => _speed;
+        public float PositionX => _positionX;
+        public Rigidbody2D Rigidbody => _rigidbody;
+        public Vector2 DirectionMovement => _directionMovement;
 
-        [SerializeField] private float _moveHorizontal;
-        [SerializeField][Range(2, 10)] private float _playerSpeed;
+        [SerializeField] private float _positionX;
+        [SerializeField][Range(2, 10)] private float _speed;
 
+        private Vector2 _directionMovement;
 
+        private Rigidbody2D _rigidbody;
+        private IInputService _inputService;
 
-        private Rigidbody2D _player;
-        private Vector2 _movement;
+        public void Init(IInputService inputService)
+        {
+            _inputService = inputService;
+            _rigidbody = GetComponent<Rigidbody2D>();
+        }
 
-
+        private void FixedUpdate()
+        {
+            CalculateDirectionMovement();
+            Movement();
+        }
 
         public void Movement()
         {
-            _moveHorizontal = Input.GetAxis("Horizontal") * _playerSpeed;
-            _movement = new Vector2(_moveHorizontal, 0);
-
-
-            _player.velocity = _movement * _playerSpeed;
-            
-
+            _rigidbody.velocity = _directionMovement * _speed;
         }
 
-        void Start()
+        private void CalculateDirectionMovement()
         {
-            _player = GetComponent<Rigidbody2D>();
-        }
-
-        void FixedUpdate()
-        {
-            Movement();
+            _positionX = _inputService.GetAxisHorizontal * _speed;
+            _directionMovement.x = _positionX;
         }
     }
 }
